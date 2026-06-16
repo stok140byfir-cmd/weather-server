@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cuaca Real-time - Grow A Garden 2</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: #0a0a1a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid #00ffcc;
+            box-shadow: 0 0 40px rgba(0,255,200,0.2);
+            width: 400px;
+        }
+        .icon { font-size: 80px; }
+        .weather { font-size: 32px; color: #00ffcc; }
+        .seed { font-size: 20px; color: #aaffaa; }
+        .time { font-size: 14px; color: #888; margin-top: 20px; }
+        .error { color: #ff4444; }
+        .loading { color: #ffaa00; animation: blink 1s infinite; }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="icon" id="icon">☀️</div>
+        <div class="weather" id="weather">CUACA: NORMAL</div>
+        <div class="seed" id="seed">🌱 BENIH: -</div>
+        <div class="time" id="time">Last update: --</div>
+    </div>
+    <script>
+        async function fetchWeather() {
+            try {
+                const res = await fetch('/weather');
+                const data = await res.json();
+                const iconMap = {
+                    'BLOODMOON': '🌑',
+                    'RAINBOW MOON': '🌈',
+                    'MIDAS': '✨',
+                    'SNOWFALL': '❄️',
+                    'LIGHTNING': '⚡',
+                    'NORMAL': '☀️'
+                };
+                document.getElementById('icon').innerText = iconMap[data.weather] || '☀️';
+                document.getElementById('weather').innerText = 'CUACA: ' + data.weather;
+                document.getElementById('seed').innerHTML = '🌱 BENIH: ' + (data.seeds || '-');
+                document.getElementById('time').innerText = 'Last update: ' + new Date(data.timestamp).toLocaleTimeString();
+            } catch (e) {
+                document.getElementById('weather').innerText = '⚠️ ERROR';
+                document.getElementById('weather').className = 'weather error';
+            }
+        }
+        fetchWeather();
+        setInterval(fetchWeather, 1000);
+    </script>
+</body>
+</html>
